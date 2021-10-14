@@ -13,7 +13,7 @@ class Bookmark
   def self.all
     connection = Bookmark.connect_db
 
-    result = connection.exec("SELECT * FROM bookmarks")
+    result = connection.exec_params("SELECT * FROM bookmarks")
     result.map do |bookmark|
       Bookmark.new(id: bookmark['id'], title: bookmark['title'], url: bookmark['url'])
     end
@@ -23,7 +23,7 @@ class Bookmark
   def self.create(url:, title:)
     connection = Bookmark.connect_db
 
-    result = connection.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}') RETURNING id, title, url;")
+    result = connection.exec_params("INSERT INTO bookmarks (url, title) VALUES($1, $2) RETURNING id, title, url;", [url, title])
     Bookmark.new(id: result[0]['id'], title: result[0]['title'], url: result[0]['url'])
   end
 
